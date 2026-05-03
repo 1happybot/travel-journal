@@ -15,148 +15,80 @@ function openLightbox(item: MediaItem, memory: Memory) {
 </script>
 
 <template>
-  <v-container class="py-8">
-    <div class="gallery-grid">
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="flex flex-col gap-7">
       <div
-        v-for="(memory, mi) in memories"
-        :key="memory.id"
+        v-for="(memory, mi) in memories" :key="memory.id"
         class="gallery-memory"
         :style="{ animationDelay: `${mi * 60}ms` }"
       >
         <!-- Memory header -->
-        <div class="d-flex align-center gap-2 mb-2 px-1">
-          <span v-if="memory.mood" style="font-size: 1.2rem;">{{ MOOD_META[memory.mood].emoji }}</span>
-          <span class="font-weight-bold text-body-1">{{ memory.title }}</span>
-          <v-spacer />
-          <span class="text-caption text-medium-emphasis">
+        <div class="flex items-center gap-2 mb-2 px-1">
+          <span v-if="memory.mood" class="text-lg">{{ MOOD_META[memory.mood].emoji }}</span>
+          <span class="font-bold text-sm">{{ memory.title }}</span>
+          <div class="flex-1" />
+          <span class="text-xs text-gray-400">
             {{ new Date(memory.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }}
           </span>
-          <v-btn icon size="x-small" variant="text" color="error" @click="memoriesStore.deleteMemory(memory.id)">
-            <v-icon>mdi-delete-outline</v-icon>
-          </v-btn>
+          <button class="text-gray-400 hover:text-red-500 text-sm transition-colors" @click="memoriesStore.deleteMemory(memory.id)">🗑️</button>
         </div>
 
-        <!-- Media grid for this memory -->
-        <div v-if="memory.media.length > 0" class="media-masonry">
+        <!-- Media grid -->
+        <div v-if="memory.media.length > 0" class="grid gap-1 rounded-2xl overflow-hidden" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); grid-auto-rows: 200px;">
           <div
-            v-for="(item, ii) in memory.media"
-            :key="item.id"
-            class="media-item"
-            :class="{
-              'media-wide': memory.media.length === 1 || (memory.media.length === 3 && ii === 0),
-            }"
+            v-for="(item, ii) in memory.media" :key="item.id"
+            class="relative cursor-pointer overflow-hidden group"
+            :class="{ 'col-span-2': memory.media.length === 1 || (memory.media.length === 3 && ii === 0) }"
             @click="openLightbox(item, memory)"
           >
-            <img
-              v-if="item.type === 'image'"
-              :src="item.url"
-              :alt="item.caption || memory.title"
-              style="width:100%;height:100%;object-fit:cover;"
-            />
-            <div
-              v-else
-              style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;"
-            >
-              <v-icon color="white" size="40">mdi-play-circle</v-icon>
+            <img v-if="item.type === 'image'" :src="item.url" :alt="item.caption || memory.title" class="w-full h-full object-cover" />
+            <div v-else class="w-full h-full bg-gray-900 flex items-center justify-center">
+              <span class="text-white text-3xl">▶️</span>
             </div>
-            <div class="media-overlay">
-              <p v-if="item.caption" class="text-white text-caption ma-0 pa-2">{{ item.caption }}</p>
-              <v-icon color="white">{{ item.type === 'video' ? 'mdi-play' : 'mdi-magnify-plus-outline' }}</v-icon>
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
+              <p v-if="item.caption" class="text-white text-xs px-2 mb-1">{{ item.caption }}</p>
+              <span class="text-white text-xl">{{ item.type === 'video' ? '▶️' : '🔍' }}</span>
             </div>
           </div>
         </div>
 
-        <!-- No media card -->
-        <v-card v-else elevation="0" border class="pa-4">
-          <p class="text-body-2 mb-0">{{ memory.description }}</p>
-        </v-card>
+        <!-- No media -->
+        <div v-else class="bg-white rounded-2xl border border-gray-100 p-4">
+          <p class="text-sm text-gray-600">{{ memory.description }}</p>
+        </div>
 
-        <div v-if="memory.location || memory.tags.length" class="d-flex align-center flex-wrap gap-1 mt-2 px-1">
-          <v-chip v-if="memory.location" size="x-small" variant="tonal">
-            <v-icon start size="12">mdi-map-marker</v-icon>{{ memory.location }}
-          </v-chip>
-          <v-chip
-            v-for="tag in memory.tags"
-            :key="tag"
-            size="x-small"
-            color="primary"
-            variant="tonal"
-          ># {{ tag }}</v-chip>
+        <div v-if="memory.location || memory.tags.length" class="flex items-center flex-wrap gap-1 mt-2 px-1">
+          <span v-if="memory.location" class="text-[0.65rem] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">📍 {{ memory.location }}</span>
+          <span v-for="tag in memory.tags" :key="tag" class="bg-primary-light text-primary text-[0.65rem] font-semibold px-2 py-0.5 rounded-full">
+            # {{ tag }}
+          </span>
         </div>
       </div>
     </div>
-  </v-container>
+  </div>
 
   <!-- Lightbox -->
-  <v-dialog v-model="lightbox.open" max-width="900" scrollable>
-    <v-card v-if="lightbox.item" rounded="xl" style="overflow: hidden;">
-      <div class="d-flex justify-end pa-2" style="position: absolute; top: 0; right: 0; z-index: 10;">
-        <v-btn icon variant="text" color="white" @click="lightbox.open = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
+  <Transition name="fade">
+    <div v-if="lightbox.open" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" @click.self="lightbox.open = false">
+      <div v-if="lightbox.item" class="relative bg-black rounded-2xl overflow-hidden max-w-4xl w-full max-h-[85vh]">
+        <button class="absolute top-3 right-3 z-10 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/80" @click="lightbox.open = false">×</button>
+        <img v-if="lightbox.item.type === 'image'" :src="lightbox.item.url" class="w-full max-h-[80vh] object-contain" />
+        <video v-else :src="lightbox.item.url" controls class="w-full max-h-[80vh]" />
+        <div v-if="lightbox.item.caption || lightbox.memory?.title" class="p-4 bg-white">
+          <p class="font-bold text-sm mb-0.5">{{ lightbox.memory?.title }}</p>
+          <p v-if="lightbox.item.caption" class="text-gray-500 text-xs">{{ lightbox.item.caption }}</p>
+        </div>
       </div>
-      <img
-        v-if="lightbox.item.type === 'image'"
-        :src="lightbox.item.url"
-        style="width:100%;max-height:80vh;object-fit:contain;display:block;background:#000;"
-      />
-      <video
-        v-else
-        :src="lightbox.item.url"
-        controls
-        style="width:100%;max-height:80vh;background:#000;"
-      />
-      <v-card-text v-if="lightbox.item.caption || lightbox.memory?.title" class="pa-4">
-        <p class="font-weight-bold mb-1">{{ lightbox.memory?.title }}</p>
-        <p v-if="lightbox.item.caption" class="text-body-2 text-medium-emphasis mb-0">
-          {{ lightbox.item.caption }}
-        </p>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+    </div>
+  </Transition>
 </template>
 
 <style scoped>
-.gallery-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-.gallery-memory {
-  animation: fadeUp 0.4s ease both;
-}
-.media-masonry {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  grid-auto-rows: 200px;
-  gap: 4px;
-  border-radius: 16px;
-  overflow: hidden;
-}
-.media-wide {
-  grid-column: span 2;
-}
-.media-item {
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
-}
-.media-item:hover .media-overlay {
-  opacity: 1;
-}
-.media-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  opacity: 0;
-  transition: opacity 0.25s;
-}
+.gallery-memory { animation: fadeUp 0.4s ease both; }
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

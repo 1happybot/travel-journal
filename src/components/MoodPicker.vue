@@ -13,7 +13,7 @@ function select(mood: MemoryMood) {
 </script>
 
 <template>
-  <div class="d-flex flex-wrap gap-2">
+  <div class="flex flex-wrap gap-2">
     <button
       v-for="[key, meta] in moods"
       :key="key"

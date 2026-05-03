@@ -49,111 +49,34 @@ function updateCaption(id: string, caption: string) {
   <div>
     <!-- Drop zone -->
     <div
-      class="drop-zone"
-      :class="{ 'drop-zone--active': isDragging }"
+      class="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors"
+      :class="isDragging ? 'border-primary bg-primary-light' : 'border-purple-200 bg-purple-50/50 hover:bg-primary-light hover:border-primary'"
       @dragover.prevent="isDragging = true"
       @dragleave.prevent="isDragging = false"
       @drop.prevent="onDrop"
       @click="fileInput?.click()"
     >
-      <v-icon size="36" color="primary" class="mb-2">mdi-cloud-upload-outline</v-icon>
-      <p class="font-weight-medium mb-1">Drop photos & videos here</p>
-      <p class="text-caption text-medium-emphasis">or click to browse</p>
+      <div class="text-3xl mb-2">☁️</div>
+      <p class="font-medium text-sm mb-1">Drop photos & videos here</p>
+      <p class="text-xs text-gray-400">or click to browse</p>
     </div>
-    <input ref="fileInput" type="file" accept="image/*,video/*" multiple style="display:none" @change="onFileChange" />
+    <input ref="fileInput" type="file" accept="image/*,video/*" multiple class="hidden" @change="onFileChange" />
 
     <!-- Previews -->
-    <div v-if="modelValue.length > 0" class="previews-grid mt-3">
-      <div
-        v-for="item in modelValue"
-        :key="item.id"
-        class="preview-item"
-      >
-        <img
-          v-if="item.type === 'image'"
-          :src="item.url"
-          style="width:100%;height:100%;object-fit:cover;"
-        />
-        <div
-          v-else
-          style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;"
-        >
-          <v-icon color="white" size="28">mdi-play-circle</v-icon>
+    <div v-if="modelValue.length > 0" class="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2 mt-3">
+      <div v-for="item in modelValue" :key="item.id" class="relative h-30 rounded-xl overflow-hidden bg-gray-100">
+        <img v-if="item.type === 'image'" :src="item.url" class="w-full h-full object-cover" />
+        <div v-else class="w-full h-full bg-gray-900 flex items-center justify-center">
+          <span class="text-white text-2xl">▶️</span>
         </div>
-
         <!-- Remove btn -->
-        <v-btn
-          icon
-          size="x-small"
-          color="error"
-          class="remove-btn"
-          @click.stop="removeItem(item.id)"
-        >
-          <v-icon size="14">mdi-close</v-icon>
-        </v-btn>
-
+        <button class="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600" @click.stop="removeItem(item.id)">×</button>
         <!-- Caption input -->
-        <div class="caption-bar">
-          <input
-            :value="item.caption"
-            placeholder="Caption..."
-            class="caption-input"
-            @input="updateCaption(item.id, ($event.target as HTMLInputElement).value)"
-          />
+        <div class="absolute bottom-0 left-0 right-0 bg-black/55 px-1.5 py-1">
+          <input :value="item.caption" placeholder="Caption..." class="bg-transparent border-none outline-none text-white text-[0.65rem] w-full placeholder:text-white/60"
+            @input="updateCaption(item.id, ($event.target as HTMLInputElement).value)" />
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.drop-zone {
-  border: 2px dashed #c0a8f0;
-  border-radius: 16px;
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-  background: #faf6ff;
-}
-.drop-zone:hover,
-.drop-zone--active {
-  background: #f0e8ff;
-  border-color: #6C3FC5;
-}
-.previews-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 8px;
-}
-.preview-item {
-  position: relative;
-  height: 120px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #eee;
-}
-.remove-btn {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-}
-.caption-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0,0,0,0.55);
-  padding: 4px 6px;
-}
-.caption-input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: white;
-  font-size: 0.7rem;
-  width: 100%;
-  font-family: 'Nunito', sans-serif;
-}
-.caption-input::placeholder { color: rgba(255,255,255,0.7); }
-</style>

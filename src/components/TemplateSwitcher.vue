@@ -9,16 +9,14 @@ const templates = Object.entries(TEMPLATE_META) as [TripTemplate, typeof TEMPLAT
 </script>
 
 <template>
-  <v-btn-group rounded="xl" variant="outlined" density="comfortable">
-    <v-btn
-      v-for="[key, meta] in templates"
-      :key="key"
-      :color="modelValue === key ? 'primary' : undefined"
-      :variant="modelValue === key ? 'flat' : 'text'"
-      :prepend-icon="meta.icon"
+  <div class="inline-flex rounded-xl border border-gray-200 overflow-hidden">
+    <button
+      v-for="[key, meta] in templates" :key="key"
+      class="px-4 py-2 text-sm font-semibold transition-colors"
+      :class="modelValue === key ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-50'"
       @click="emit('update:modelValue', key)"
     >
-      {{ meta.label }}
-    </v-btn>
-  </v-btn-group>
+      {{ meta.icon }} {{ meta.label }}
+    </button>
+  </div>
 </template>

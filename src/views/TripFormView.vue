@@ -71,125 +71,79 @@ function submit() {
 </script>
 
 <template>
-  <v-container class="py-8" style="max-width: 680px;">
-    <v-btn variant="text" color="primary" class="mb-4" prepend-icon="mdi-arrow-left" @click="router.back()">
-      Back
-    </v-btn>
+  <div class="max-w-2xl mx-auto px-4 py-8">
+    <button class="text-primary font-semibold text-sm mb-4 hover:underline" @click="router.back()">← Back</button>
 
-    <h1 class="font-weight-black mb-6" style="font-size: 2rem; color: #6C3FC5;">
+    <h1 class="font-extrabold text-3xl text-primary mb-6">
       {{ isEdit ? 'Edit Trip' : '✈️ New Trip' }}
     </h1>
 
-    <v-form @submit.prevent="submit">
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
-            v-model="title"
-            label="Trip Title"
-            placeholder="e.g. Summer in Santorini"
-            prepend-inner-icon="mdi-pencil"
-            required
-          />
-        </v-col>
+    <form @submit.prevent="submit" class="space-y-5">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Trip Title</label>
+        <input v-model="title" type="text" placeholder="e.g. Summer in Santorini" required
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
+      </div>
 
-        <v-col cols="12">
-          <v-text-field
-            v-model="destination"
-            label="Destination"
-            placeholder="e.g. Santorini, Greece"
-            prepend-inner-icon="mdi-map-marker"
-            required
-          />
-        </v-col>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Destination</label>
+        <input v-model="destination" type="text" placeholder="e.g. Santorini, Greece" required
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
+      </div>
 
-        <v-col cols="12" sm="6">
-          <v-text-field
-            v-model="startDate"
-            label="Start Date"
-            type="date"
-            prepend-inner-icon="mdi-calendar-start"
-            required
-          />
-        </v-col>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Start Date</label>
+          <input v-model="startDate" type="date" required
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">End Date</label>
+          <input v-model="endDate" type="date" required
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
+        </div>
+      </div>
 
-        <v-col cols="12" sm="6">
-          <v-text-field
-            v-model="endDate"
-            label="End Date"
-            type="date"
-            prepend-inner-icon="mdi-calendar-end"
-            required
-          />
-        </v-col>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+        <textarea v-model="description" rows="3" placeholder="Describe your trip..."
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition resize-y"></textarea>
+      </div>
 
-        <v-col cols="12">
-          <v-textarea
-            v-model="description"
-            label="Description"
-            placeholder="Describe your trip..."
-            rows="3"
-            auto-grow
-            prepend-inner-icon="mdi-text"
-          />
-        </v-col>
+      <!-- Cover image -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Cover Image</label>
+        <div v-if="coverPreview" class="mb-3 rounded-xl overflow-hidden">
+          <img :src="coverPreview" class="w-full h-44 object-cover" />
+        </div>
+        <button type="button" class="px-4 py-2 bg-primary-light text-primary font-semibold rounded-xl text-sm hover:bg-primary/20 transition-colors"
+          @click="($refs.coverInput as HTMLInputElement).click()">
+          {{ coverPreview ? '🔄 Change Cover' : '🖼️ Upload Cover Image' }}
+        </button>
+        <input ref="coverInput" type="file" accept="image/*" class="hidden" @change="onCoverFile" />
+      </div>
 
-        <!-- Cover image -->
-        <v-col cols="12">
-          <p class="font-weight-semibold mb-2">Cover Image</p>
-          <v-card v-if="coverPreview" class="mb-3" rounded="xl" elevation="0">
-            <v-img :src="coverPreview" height="180" cover rounded="xl" />
-          </v-card>
-          <v-btn variant="tonal" color="primary" prepend-icon="mdi-image-plus" @click="($refs.coverInput as HTMLInputElement).click()">
-            {{ coverPreview ? 'Change Cover' : 'Upload Cover Image' }}
-          </v-btn>
-          <input ref="coverInput" type="file" accept="image/*" style="display:none" @change="onCoverFile" />
-        </v-col>
+      <!-- Template -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">Display Template</label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button type="button"
+            v-for="[key, meta] in templates" :key="key"
+            class="p-4 rounded-xl border-2 text-center transition-all cursor-pointer"
+            :class="template === key ? 'border-primary bg-primary text-white' : 'border-gray-200 hover:border-primary/40'"
+            @click="template = key">
+            <div class="text-2xl mb-1">{{ meta.icon }}</div>
+            <div class="font-bold text-sm">{{ meta.label }}</div>
+            <div class="text-xs mt-0.5" :class="template === key ? 'text-white/80' : 'text-gray-400'">{{ meta.description }}</div>
+          </button>
+        </div>
+      </div>
 
-        <!-- Template -->
-        <v-col cols="12">
-          <p class="font-weight-semibold mb-3">Display Template</p>
-          <v-row>
-            <v-col
-              v-for="[key, meta] in templates"
-              :key="key"
-              cols="12"
-              sm="4"
-            >
-              <v-card
-                :color="template === key ? 'primary' : undefined"
-                :variant="template === key ? 'flat' : 'outlined'"
-                class="pa-4 text-center"
-                style="cursor: pointer; transition: all 0.2s;"
-                rounded="xl"
-                @click="template = key"
-              >
-                <v-icon :color="template === key ? 'white' : 'primary'" size="32" class="mb-2">
-                  {{ meta.icon }}
-                </v-icon>
-                <div :class="template === key ? 'text-white' : ''" class="font-weight-bold">{{ meta.label }}</div>
-                <div :class="template === key ? 'text-white' : 'text-medium-emphasis'" class="text-caption">
-                  {{ meta.description }}
-                </div>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-col>
-
-        <v-col cols="12" class="pt-4">
-          <v-btn
-            type="submit"
-            color="primary"
-            size="large"
-            block
-            rounded="xl"
-            class="font-weight-bold"
-            :disabled="!title || !destination || !startDate || !endDate"
-          >
-            <v-icon start>{{ isEdit ? 'mdi-content-save' : 'mdi-airplane-takeoff' }}</v-icon>
-            {{ isEdit ? 'Save Changes' : 'Create Trip' }}
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-form>
-  </v-container>
+      <button type="submit"
+        class="w-full py-3.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-base"
+        :disabled="!title || !destination || !startDate || !endDate">
+        {{ isEdit ? '💾 Save Changes' : '✈️ Create Trip' }}
+      </button>
+    </form>
+  </div>
 </template>

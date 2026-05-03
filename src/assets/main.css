@@ -1,39 +1,52 @@
+@import 'tailwindcss';
 @import './base.css';
 
+@theme {
+  --color-primary: #6C3FC5;
+  --color-primary-light: #f0e8ff;
+  --color-secondary: #00BCD4;
+  --color-accent: #FF6F61;
+  --color-background: #F8F6FF;
+  --color-surface: #FFFFFF;
+  --color-error: #F44336;
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
+  --font-nunito: 'Nunito', sans-serif;
+  --font-caveat: 'Caveat', cursive;
+}
+
 * {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-nunito);
   box-sizing: border-box;
 }
 
 html, body, #app {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100vh;
+}
+
+body {
+  background: var(--color-background);
 }
 
 .font-caveat {
-  font-family: 'Caveat', cursive !important;
+  font-family: var(--font-caveat) !important;
 }
 
 .gradient-bg {
   background: linear-gradient(135deg, #6C3FC5 0%, #00BCD4 100%);
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.3) !important;
-}
-
 .page-transition-enter-active,
 .page-transition-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 .page-transition-enter-from {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(12px);
 }
 .page-transition-leave-to {
   opacity: 0;
-  transform: translateY(-16px);
+  transform: translateY(-12px);
 }

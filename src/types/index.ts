@@ -43,7 +43,7 @@ export const MOOD_META: Record<MemoryMood, { emoji: string; label: string; color
 }
 
 export const TEMPLATE_META: Record<TripTemplate, { icon: string; label: string; description: string }> = {
-  timeline: { icon: 'mdi-timeline-outline',  label: 'Timeline', description: 'Chronological story' },
-  gallery:  { icon: 'mdi-image-multiple',    label: 'Gallery',  description: 'Photo & video grid'  },
-  story:    { icon: 'mdi-book-open-variant', label: 'Story',    description: 'Scrapbook style'     },
+  timeline: { icon: '🕐', label: 'Timeline', description: 'Chronological story' },
+  gallery:  { icon: '🖼️', label: 'Gallery',  description: 'Photo & video grid'  },
+  story:    { icon: '📖', label: 'Story',    description: 'Scrapbook style'     },
 }

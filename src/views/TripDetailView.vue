@@ -21,10 +21,7 @@ const memories = computed(() => memoriesStore.getMemoriesByTrip(tripId.value))
 const activeTemplate = ref<TripTemplate>('timeline')
 
 watch(trip, (t) => { if (t) activeTemplate.value = t.template }, { immediate: true })
-
-watch(activeTemplate, (val) => {
-  if (trip.value) tripsStore.setTemplate(trip.value.id, val)
-})
+watch(activeTemplate, (val) => { if (trip.value) tripsStore.setTemplate(trip.value.id, val) })
 
 const deleteDialog = ref(false)
 function confirmDelete() {
@@ -36,123 +33,98 @@ function confirmDelete() {
 
 <template>
   <div v-if="trip">
-    <!-- Parallax hero header -->
-    <div
-      class="trip-hero position-relative"
-      :style="{
-        background: trip.coverImage
-          ? `url(${trip.coverImage}) center/cover`
-          : 'linear-gradient(135deg, #6C3FC5 0%, #00BCD4 100%)',
-        minHeight: '300px',
-      }"
-    >
-      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2),rgba(0,0,0,0.65));" />
-      <v-container class="position-relative" style="z-index:1; padding-top: 80px; padding-bottom: 40px;">
-        <v-btn
-          variant="text"
-          color="white"
-          class="mb-4"
-          prepend-icon="mdi-arrow-left"
-          @click="router.push('/trips')"
-        >
-          All Trips
-        </v-btn>
-        <div class="d-flex align-center flex-wrap gap-2 mb-2">
-          <v-chip color="white" variant="tonal" size="small">
-            <v-icon start size="14">mdi-map-marker</v-icon>
-            {{ trip.destination }}
-          </v-chip>
-          <v-chip color="white" variant="tonal" size="small">
-            <v-icon start size="14">mdi-calendar</v-icon>
-            {{ new Date(trip.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }}
-            –
-            {{ new Date(trip.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
-          </v-chip>
-          <v-chip color="white" variant="tonal" size="small">
-            <v-icon start size="14">mdi-image-multiple</v-icon>
-            {{ memories.length }} memories
-          </v-chip>
+    <!-- Hero header -->
+    <div class="relative" style="min-height: 300px;"
+      :style="{ background: trip.coverImage ? `url(${trip.coverImage}) center/cover` : 'linear-gradient(135deg, #6C3FC5 0%, #00BCD4 100%)' }">
+      <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-black/65" />
+      <div class="relative z-10 max-w-5xl mx-auto px-4 pt-20 pb-10">
+        <button class="text-white/80 hover:text-white text-sm font-semibold mb-4 inline-block" @click="router.push('/trips')">
+          ← All Trips
+        </button>
+        <div class="flex items-center flex-wrap gap-2 mb-2">
+          <span class="bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">📍 {{ trip.destination }}</span>
+          <span class="bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
+            📅 {{ new Date(trip.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }} – {{ new Date(trip.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
+          </span>
+          <span class="bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">🖼️ {{ memories.length }} memories</span>
         </div>
-        <h1 class="text-white font-weight-black mb-2" style="font-size: clamp(1.8rem, 4vw, 3rem);">
-          {{ trip.title }}
-        </h1>
-        <p v-if="trip.description" class="text-white mb-0" style="opacity:0.85; max-width: 600px;">
-          {{ trip.description }}
-        </p>
-        <div class="d-flex gap-2 mt-3">
-          <v-btn size="small" variant="tonal" color="white" :to="`/trips/${trip.id}/edit`" prepend-icon="mdi-pencil">
-            Edit
-          </v-btn>
-          <v-btn size="small" variant="tonal" color="error" prepend-icon="mdi-delete-outline" @click="deleteDialog = true">
-            Delete
-          </v-btn>
+        <h1 class="text-white font-extrabold mb-2" style="font-size: clamp(1.8rem, 4vw, 3rem);">{{ trip.title }}</h1>
+        <p v-if="trip.description" class="text-white/85 max-w-xl">{{ trip.description }}</p>
+        <div class="flex gap-2 mt-3">
+          <router-link :to="`/trips/${trip.id}/edit`" class="px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white text-sm font-semibold rounded-xl hover:bg-white/30 transition-colors">
+            ✏️ Edit
+          </router-link>
+          <button class="px-4 py-1.5 bg-red-500/80 text-white text-sm font-semibold rounded-xl hover:bg-red-600 transition-colors" @click="deleteDialog = true">
+            🗑️ Delete
+          </button>
         </div>
-      </v-container>
+      </div>
     </div>
 
     <!-- Template switcher bar -->
-    <div style="background: white; border-bottom: 1px solid rgba(0,0,0,0.08); position: sticky; top: 64px; z-index: 10;">
-      <v-container class="py-3 d-flex align-center justify-space-between flex-wrap gap-2">
+    <div class="bg-white border-b border-gray-100 sticky top-16 z-10">
+      <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
         <TemplateSwitcher v-model="activeTemplate" />
-        <v-btn color="primary" rounded="xl" prepend-icon="mdi-plus" :to="`/trips/${trip.id}/memories/new`">
-          Add Memory
-        </v-btn>
-      </v-container>
+        <router-link :to="`/trips/${trip.id}/memories/new`" class="px-5 py-2 bg-primary text-white font-bold rounded-xl text-sm hover:bg-primary/90 transition-colors">
+          + Add Memory
+        </router-link>
+      </div>
     </div>
 
     <!-- Memories content -->
     <div>
-      <!-- Empty state -->
-      <v-container v-if="memories.length === 0" class="text-center py-16">
-        <div style="font-size: 4rem;">📷</div>
-        <h2 class="font-weight-bold mt-4 mb-2">No memories yet</h2>
-        <p class="text-medium-emphasis mb-6">Start adding photos, videos and notes to this trip.</p>
-        <v-btn color="primary" rounded="xl" size="large" prepend-icon="mdi-plus" :to="`/trips/${trip.id}/memories/new`">
-          Add First Memory
-        </v-btn>
-      </v-container>
+      <div v-if="memories.length === 0" class="text-center py-20 max-w-lg mx-auto px-4">
+        <div class="text-6xl">📷</div>
+        <h2 class="font-bold text-xl mt-4 mb-2">No memories yet</h2>
+        <p class="text-gray-500 mb-6">Start adding photos, videos and notes to this trip.</p>
+        <router-link :to="`/trips/${trip.id}/memories/new`" class="inline-block px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors">
+          + Add First Memory
+        </router-link>
+      </div>
 
       <template v-else>
         <transition name="page-transition" mode="out-in">
-          <TimelineView v-if="activeTemplate === 'timeline'" :key="'timeline'" :memories="memories" :trip-id="trip.id" />
-          <GalleryView  v-else-if="activeTemplate === 'gallery'" :key="'gallery'" :memories="memories" :trip-id="trip.id" />
-          <StoryView    v-else :key="'story'" :memories="memories" :trip-id="trip.id" />
+          <TimelineView v-if="activeTemplate === 'timeline'" key="timeline" :memories="memories" :trip-id="trip.id" />
+          <GalleryView v-else-if="activeTemplate === 'gallery'" key="gallery" :memories="memories" :trip-id="trip.id" />
+          <StoryView v-else key="story" :memories="memories" :trip-id="trip.id" />
         </transition>
       </template>
     </div>
 
     <!-- FAB -->
-    <v-btn
-      icon
-      color="primary"
-      size="x-large"
-      elevation="6"
-      :to="`/trips/${trip.id}/memories/new`"
-      style="position: fixed; bottom: 32px; right: 32px; z-index: 100;"
-    >
-      <v-icon size="28">mdi-plus</v-icon>
-    </v-btn>
+    <router-link :to="`/trips/${trip.id}/memories/new`"
+      class="fixed bottom-8 right-8 z-50 w-14 h-14 bg-primary text-white rounded-full shadow-xl flex items-center justify-center text-2xl hover:scale-110 hover:shadow-2xl transition-all">
+      +
+    </router-link>
 
     <!-- Delete confirm dialog -->
-    <v-dialog v-model="deleteDialog" max-width="400">
-      <v-card rounded="xl">
-        <v-card-title class="pa-6 font-weight-bold">Delete Trip?</v-card-title>
-        <v-card-text class="px-6">
-          This will permanently delete <strong>{{ trip.title }}</strong> and all {{ memories.length }} memories. This cannot be undone.
-        </v-card-text>
-        <v-card-actions class="pa-4">
-          <v-spacer />
-          <v-btn variant="text" @click="deleteDialog = false">Cancel</v-btn>
-          <v-btn color="error" variant="flat" rounded="xl" @click="confirmDelete">Delete</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <Transition name="fade">
+      <div v-if="deleteDialog" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="deleteDialog = false">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+          <h3 class="font-bold text-lg mb-2">Delete Trip?</h3>
+          <p class="text-gray-600 text-sm mb-5">
+            This will permanently delete <strong>{{ trip.title }}</strong> and all {{ memories.length }} memories. This cannot be undone.
+          </p>
+          <div class="flex justify-end gap-3">
+            <button class="px-4 py-2 text-gray-600 font-medium rounded-xl hover:bg-gray-100 transition-colors" @click="deleteDialog = false">Cancel</button>
+            <button class="px-4 py-2 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors" @click="confirmDelete">Delete</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 
   <!-- Trip not found -->
-  <v-container v-else class="text-center py-16">
-    <div style="font-size: 3rem;">🔍</div>
-    <h2 class="mt-4 mb-2">Trip not found</h2>
-    <v-btn color="primary" to="/trips">Back to Trips</v-btn>
-  </v-container>
+  <div v-else class="text-center py-20">
+    <div class="text-5xl">🔍</div>
+    <h2 class="mt-4 mb-4 font-bold text-xl">Trip not found</h2>
+    <router-link to="/trips" class="px-6 py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors">
+      Back to Trips
+    </router-link>
+  </div>
 </template>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

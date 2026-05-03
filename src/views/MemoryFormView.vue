@@ -58,112 +58,70 @@ function submit() {
 </script>
 
 <template>
-  <v-container class="py-8" style="max-width: 680px;">
-    <v-btn variant="text" color="primary" class="mb-4" prepend-icon="mdi-arrow-left" @click="router.back()">
-      Back
-    </v-btn>
+  <div class="max-w-2xl mx-auto px-4 py-8">
+    <button class="text-primary font-semibold text-sm mb-4 hover:underline" @click="router.back()">← Back</button>
 
-    <h1 class="font-weight-black mb-1" style="font-size: 2rem; color: #6C3FC5;">
-      📷 New Memory
-    </h1>
-    <p v-if="trip" class="text-medium-emphasis mb-6">
-      Adding to <strong>{{ trip.title }}</strong>
-    </p>
+    <h1 class="font-extrabold text-3xl text-primary mb-1">📷 New Memory</h1>
+    <p v-if="trip" class="text-gray-500 mb-6">Adding to <strong>{{ trip.title }}</strong></p>
 
-    <v-form @submit.prevent="submit">
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
-            v-model="title"
-            label="Memory Title"
-            placeholder="e.g. Sunset at Oia"
-            prepend-inner-icon="mdi-pencil"
-            required
-          />
-        </v-col>
+    <form @submit.prevent="submit" class="space-y-5">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Memory Title</label>
+        <input v-model="title" type="text" placeholder="e.g. Sunset at Oia" required
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
+      </div>
 
-        <v-col cols="12" sm="6">
-          <v-text-field
-            v-model="date"
-            label="Date"
-            type="date"
-            prepend-inner-icon="mdi-calendar"
-            required
-          />
-        </v-col>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Date</label>
+          <input v-model="date" type="date" required
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Location (optional)</label>
+          <input v-model="location" type="text" placeholder="e.g. Oia, Santorini"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
+        </div>
+      </div>
 
-        <v-col cols="12" sm="6">
-          <v-text-field
-            v-model="location"
-            label="Location (optional)"
-            placeholder="e.g. Oia, Santorini"
-            prepend-inner-icon="mdi-map-marker"
-          />
-        </v-col>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+        <textarea v-model="description" rows="3" placeholder="Describe this moment..."
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition resize-y"></textarea>
+      </div>
 
-        <v-col cols="12">
-          <v-textarea
-            v-model="description"
-            label="Description"
-            placeholder="Describe this moment..."
-            rows="3"
-            auto-grow
-            prepend-inner-icon="mdi-text"
-          />
-        </v-col>
+      <!-- Mood picker -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">How were you feeling?</label>
+        <MoodPicker v-model="mood" />
+      </div>
 
-        <!-- Mood picker -->
-        <v-col cols="12">
-          <p class="font-weight-semibold mb-3">How were you feeling?</p>
-          <MoodPicker v-model="mood" />
-        </v-col>
+      <!-- Tags -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Tags (press Enter to add)</label>
+        <input v-model="tagInput" type="text" placeholder="e.g. beach, sunset, food"
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+          @keydown="onTagKey" @blur="addTag" />
+        <div v-if="tags.length" class="flex flex-wrap gap-1.5 mt-2">
+          <span v-for="tag in tags" :key="tag"
+            class="inline-flex items-center gap-1 px-3 py-1 bg-primary-light text-primary text-xs font-semibold rounded-full">
+            # {{ tag }}
+            <button type="button" class="ml-0.5 hover:text-red-500" @click="removeTag(tag)">×</button>
+          </span>
+        </div>
+      </div>
 
-        <!-- Tags -->
-        <v-col cols="12">
-          <v-text-field
-            v-model="tagInput"
-            label="Tags (press Enter to add)"
-            placeholder="e.g. beach, sunset, food"
-            prepend-inner-icon="mdi-tag"
-            @keydown="onTagKey"
-            @blur="addTag"
-          />
-          <div v-if="tags.length" class="d-flex flex-wrap gap-1 mt-1">
-            <v-chip
-              v-for="tag in tags"
-              :key="tag"
-              closable
-              size="small"
-              color="primary"
-              variant="tonal"
-              @click:close="removeTag(tag)"
-            >
-              # {{ tag }}
-            </v-chip>
-          </div>
-        </v-col>
+      <!-- Media uploader -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">Photos & Videos</label>
+        <MediaUploader v-model="media" />
+      </div>
 
-        <!-- Media uploader -->
-        <v-col cols="12">
-          <p class="font-weight-semibold mb-3">Photos & Videos</p>
-          <MediaUploader v-model="media" />
-        </v-col>
-
-        <v-col cols="12" class="pt-4">
-          <v-btn
-            type="submit"
-            color="primary"
-            size="large"
-            block
-            rounded="xl"
-            class="font-weight-bold"
-            :disabled="!title || !date"
-          >
-            <v-icon start>mdi-check-circle</v-icon>
-            Save Memory
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-form>
-  </v-container>
+      <button type="submit"
+        class="w-full py-3.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-base"
+        :disabled="!title || !date">
+        ✅ Save Memory
+      </button>
+    </form>
+  </div>
 </template>

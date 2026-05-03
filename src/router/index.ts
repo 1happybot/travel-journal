@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import TripsView from '../views/TripsView.vue'
+import TripFormView from '../views/TripFormView.vue'
+import TripDetailView from '../views/TripDetailView.vue'
+import MemoryFormView from '../views/MemoryFormView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,27 +16,27 @@ const router = createRouter({
     {
       path: '/trips',
       name: 'trips',
-      component: () => import('../views/TripsView.vue'),
+      component: TripsView,
     },
     {
       path: '/trips/new',
       name: 'trip-new',
-      component: () => import('../views/TripFormView.vue'),
+      component: TripFormView,
     },
     {
       path: '/trips/:id',
       name: 'trip-detail',
-      component: () => import('../views/TripDetailView.vue'),
+      component: TripDetailView,
     },
     {
       path: '/trips/:id/edit',
       name: 'trip-edit',
-      component: () => import('../views/TripFormView.vue'),
+      component: TripFormView,
     },
     {
       path: '/trips/:id/memories/new',
       name: 'memory-new',
-      component: () => import('../views/MemoryFormView.vue'),
+      component: MemoryFormView,
     },
   ],
   scrollBehavior: () => ({ top: 0 }),

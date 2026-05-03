@@ -8,46 +8,31 @@ const router = useRouter()
 </script>
 
 <template>
-  <v-container class="py-8">
+  <div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Header -->
-    <v-row align="center" class="mb-6">
-      <v-col>
-        <h1 class="font-weight-black" style="font-size: 2rem; color: #6C3FC5;">My Trips</h1>
-        <p class="text-medium-emphasis">{{ tripsStore.trips.length }} adventure{{ tripsStore.trips.length !== 1 ? 's' : '' }} captured</p>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn
-          color="primary"
-          rounded="xl"
-          prepend-icon="mdi-plus"
-          @click="router.push('/trips/new')"
-        >
-          New Trip
-        </v-btn>
-      </v-col>
-    </v-row>
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="font-extrabold text-3xl text-primary">My Trips</h1>
+        <p class="text-gray-500">{{ tripsStore.trips.length }} adventure{{ tripsStore.trips.length !== 1 ? 's' : '' }} captured</p>
+      </div>
+      <button class="px-5 py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors" @click="router.push('/trips/new')">
+        + New Trip
+      </button>
+    </div>
 
     <!-- Empty state -->
-    <div v-if="tripsStore.trips.length === 0" class="text-center py-16">
-      <div style="font-size: 5rem;">🗺️</div>
-      <h2 class="font-weight-bold mt-4 mb-2">No trips yet!</h2>
-      <p class="text-medium-emphasis mb-6">Start capturing your vacation memories.</p>
-      <v-btn color="primary" rounded="xl" size="large" prepend-icon="mdi-airplane-takeoff" @click="router.push('/trips/new')">
-        Create your first trip
-      </v-btn>
+    <div v-if="tripsStore.trips.length === 0" class="text-center py-20">
+      <div class="text-7xl">🗺️</div>
+      <h2 class="font-bold text-xl mt-4 mb-2">No trips yet!</h2>
+      <p class="text-gray-500 mb-6">Start capturing your vacation memories.</p>
+      <button class="px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors" @click="router.push('/trips/new')">
+        ✈️ Create your first trip
+      </button>
     </div>
 
     <!-- Trips grid -->
-    <v-row v-else>
-      <v-col
-        v-for="trip in tripsStore.trips"
-        :key="trip.id"
-        cols="12"
-        sm="6"
-        lg="4"
-      >
-        <TripCard :trip="trip" />
-      </v-col>
-    </v-row>
-  </v-container>
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <TripCard v-for="trip in tripsStore.trips" :key="trip.id" :trip="trip" />
+    </div>
+  </div>
 </template>
