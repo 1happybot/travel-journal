@@ -1,0 +1,7 @@
+services:
+  wanderlog:
+    build: .
+    image: wanderlog
+    ports:
+      - "8080:80"
+    restart: unless-stopped

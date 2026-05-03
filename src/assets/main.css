@@ -1,0 +1,39 @@
+@import './base.css';
+
+* {
+  font-family: 'Nunito', sans-serif;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.font-caveat {
+  font-family: 'Caveat', cursive !important;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #6C3FC5 0%, #00BCD4 100%);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+.page-transition-enter-active,
+.page-transition-leave-active {
+  transition: all 0.3s ease;
+}
+.page-transition-enter-from {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.page-transition-leave-to {
+  opacity: 0;
+  transform: translateY(-16px);
+}
