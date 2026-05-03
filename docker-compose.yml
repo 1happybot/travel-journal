@@ -1,7 +1,8 @@
 services:
-  wanderlog:
+  tripmemories:
     build: .
-    image: wanderlog
+    image: tripmemories
     ports:
       - "8080:80"
+      - "8443:443"
     restart: unless-stopped

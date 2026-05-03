@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: wanderlog
+    name: tripmemories
     runtime: static
     buildCommand: npm ci && npm run build-only
     staticPublishPath: ./dist

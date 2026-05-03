@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import type { Memory } from '@/types'
 
-const STORAGE_KEY = 'wanderlog_memories'
+const STORAGE_KEY = 'tripmemories_memories'
 
 function load(): Memory[] {
   try {

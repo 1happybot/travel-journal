@@ -7,6 +7,7 @@ import TemplateSwitcher from '@/components/TemplateSwitcher.vue'
 import TimelineView from '@/components/templates/TimelineView.vue'
 import GalleryView from '@/components/templates/GalleryView.vue'
 import StoryView from '@/components/templates/StoryView.vue'
+import JourneyMap from '@/components/JourneyMap.vue'
 import type { TripTemplate } from '@/types'
 
 const route = useRoute()
@@ -27,7 +28,7 @@ const deleteDialog = ref(false)
 function confirmDelete() {
   tripsStore.deleteTrip(tripId.value)
   memoriesStore.deleteMemoriesByTrip(tripId.value)
-  router.push('/trips')
+  router.push('/')
 }
 </script>
 
@@ -38,7 +39,7 @@ function confirmDelete() {
       :style="{ background: trip.coverImage ? `url(${trip.coverImage}) center/cover` : 'linear-gradient(135deg, #6C3FC5 0%, #00BCD4 100%)' }">
       <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-black/65" />
       <div class="relative z-10 max-w-5xl mx-auto px-4 pt-20 pb-10">
-        <button class="text-white/80 hover:text-white text-sm font-semibold mb-4 inline-block" @click="router.push('/trips')">
+        <button class="text-white/80 hover:text-white text-sm font-semibold mb-4 inline-block" @click="router.push('/')">
           ← All Trips
         </button>
         <div class="flex items-center flex-wrap gap-2 mb-2">
@@ -88,6 +89,9 @@ function confirmDelete() {
           <GalleryView v-else-if="activeTemplate === 'gallery'" key="gallery" :memories="memories" :trip-id="trip.id" />
           <StoryView v-else key="story" :memories="memories" :trip-id="trip.id" />
         </transition>
+
+        <!-- Journey Map -->
+        <JourneyMap :memories="memories" :destination="trip.destination" />
       </template>
     </div>
 
@@ -118,7 +122,7 @@ function confirmDelete() {
   <div v-else class="text-center py-20">
     <div class="text-5xl">🔍</div>
     <h2 class="mt-4 mb-4 font-bold text-xl">Trip not found</h2>
-    <router-link to="/trips" class="px-6 py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors">
+    <router-link to="/" class="px-6 py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors">
       Back to Trips
     </router-link>
   </div>

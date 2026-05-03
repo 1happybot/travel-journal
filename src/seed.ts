@@ -1,7 +1,7 @@
 import type { Trip, Memory } from '@/types'
 
-const TRIPS_KEY = 'wanderlog_trips'
-const MEMORIES_KEY = 'wanderlog_memories'
+const TRIPS_KEY = 'tripmemories_trips'
+const MEMORIES_KEY = 'tripmemories_memories'
 
 const trips: Trip[] = [
   {

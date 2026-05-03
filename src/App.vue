@@ -6,8 +6,7 @@ const drawer = ref(false)
 const router = useRouter()
 
 const navItems = [
-  { title: 'Home', icon: '🏠', to: '/' },
-  { title: 'My Trips', icon: '📍', to: '/trips' },
+  { title: 'My Trips', icon: '📍', to: '/' },
 ]
 </script>
 
@@ -22,7 +21,7 @@ const navItems = [
           </svg>
         </button>
         <span class="font-extrabold text-xl tracking-wide cursor-pointer select-none" @click="router.push('/')">
-          ✈️ WanderLog
+          ✈️ TripMemories
         </span>
         <div class="hidden md:flex items-center gap-1">
           <router-link
@@ -45,7 +44,7 @@ const navItems = [
     <Transition name="slide">
       <div v-if="drawer" class="fixed top-0 left-0 bottom-0 w-72 bg-white shadow-2xl z-50 md:hidden">
         <div class="p-5 border-b border-gray-100">
-          <div class="font-extrabold text-lg text-primary">✈️ WanderLog</div>
+          <div class="font-extrabold text-lg text-primary">✈️ TripMemories</div>
           <div class="text-sm text-gray-400">Your vacation journal</div>
         </div>
         <nav class="p-3 flex flex-col gap-1">

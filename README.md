@@ -1,6 +1,6 @@
-# ✈️ WanderLog — Vacation Memories Journal
+# ✈️ TripMemories — Vacation Memories Journal
 
-A beautiful, fully client-side vacation journal built with **Vue 3 + TypeScript + Vite + Vuetify 3**.  
+A beautiful, fully client-side vacation journal built with **Vue 3 + TypeScript + Vite + Tailwind CSS**.  
 Capture trips, upload photos & videos, and showcase memories in three stunning display templates.
 
 ---
@@ -16,6 +16,7 @@ Capture trips, upload photos & videos, and showcase memories in three stunning d
 - **🏷️ Tags & Location** — Searchable tags and location per memory
 - **💾 Offline-first** — All data persisted in `localStorage`, no backend needed
 - **📱 Responsive** — Mobile nav drawer, works on all screen sizes
+- **🔒 HTTPS** — TLS enabled in Docker (auto on Render.com)
 
 ---
 
@@ -63,18 +64,18 @@ npm run lint
 
 ```bash
 # Build the image
-docker build -t wanderlog .
+docker build -t tripmemories .
 
-# Run on port 8080
-docker run -p 8080:80 wanderlog
-# → http://localhost:8080
+# Run on port 8443 (HTTPS) + 8080 (HTTP redirect)
+docker run -p 8080:80 -p 8443:443 tripmemories
+# → https://localhost:8443
 ```
 
 ### Using Docker Compose
 
 ```bash
 docker compose up
-# → http://localhost:8080
+# → https://localhost:8443 (HTTP on 8080 redirects to HTTPS)
 
 # Run in background
 docker compose up -d
@@ -83,15 +84,39 @@ docker compose up -d
 docker compose down
 ```
 
+> **Note:** The Docker image includes a self-signed certificate for local development.  
+> For production, mount real certificates at `/etc/nginx/ssl/server.crt` and `/etc/nginx/ssl/server.key`.
+
+---
+
+## 🚀 Deploy to Render.com
+
+### Option A — Static Site (recommended, free tier)
+
+1. Push to GitHub
+2. Go to [render.com](https://render.com) → **New** → **Blueprint**
+3. Connect your repo — Render auto-detects `render.yaml`
+4. Deploy (HTTPS is automatic)
+
+### Option B — Docker Web Service
+
+1. **New** → **Web Service** → select repo
+2. Choose **Docker** runtime
+3. Render injects `PORT` automatically
+
+| Setting | Value |
+|---------|-------|
+| Build Command | `npm ci && npm run build-only` |
+| Publish Directory | `dist` |
+
 ---
 
 ## 📁 Project Structure
 
 ```
-web-app/
 ├── src/
 │   ├── App.vue                        # Root shell: nav bar + drawer
-│   ├── main.ts                        # App entry, Vuetify theme setup
+│   ├── main.ts                        # App entry, Pinia + Router setup
 │   ├── seed.ts                        # Dev-only demo data seed (localStorage)
 │   ├── types/
 │   │   └── index.ts                   # Trip, Memory, MediaItem interfaces
@@ -115,9 +140,10 @@ web-app/
 │           ├── TimelineView.vue       # Timeline display template
 │           ├── GalleryView.vue        # Gallery display template
 │           └── StoryView.vue          # Polaroid scrapbook template
-├── Dockerfile                         # Multi-stage Docker build
+├── render.yaml                        # Render.com Blueprint (static site)
+├── Dockerfile                         # Multi-stage Docker build with TLS
 ├── docker-compose.yml
-├── nginx.conf                         # nginx config for SPA routing
+├── nginx.conf                         # nginx config: HTTPS + SPA routing
 └── .dockerignore
 ```
 
@@ -137,13 +163,13 @@ The seed data includes:
 
 Each trip comes with 2–3 memories covering different moods, locations, tags, and cover images.
 
-**Seeding only runs when both `wanderlog_trips` and `wanderlog_memories` are absent from `localStorage`** — it will never overwrite data you've already added.
+**Seeding only runs when both `tripmemories_trips` and `tripmemories_memories` are absent from `localStorage`** — it will never overwrite data you've already added.
 
 To reset and re-seed:
 ```js
 // Paste in the browser console, then refresh
-localStorage.removeItem('wanderlog_trips')
-localStorage.removeItem('wanderlog_memories')
+localStorage.removeItem('tripmemories_trips')
+localStorage.removeItem('tripmemories_memories')
 ```
 
 The seed file lives at `src/seed.ts` and is **excluded from production builds** via the `import.meta.env.DEV` guard in `main.ts`.
@@ -170,11 +196,10 @@ The seed file lives at `src/seed.ts` and is **excluded from production builds** 
 | [Vue 3](https://vuejs.org/) | UI framework (Composition API) |
 | [TypeScript](https://www.typescriptlang.org/) | Type safety |
 | [Vite 8](https://vite.dev/) | Build tool |
-| [Vuetify 3](https://vuetifyjs.com/) | Material Design component library |
+| [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first CSS framework |
 | [Pinia](https://pinia.vuejs.org/) | State management |
 | [Vue Router 5](https://router.vuejs.org/) | Client-side routing |
 | [Nunito + Caveat](https://fonts.google.com/) | Google Fonts |
-| [@mdi/font](https://materialdesignicons.com/) | Icon set |
 
 ---
 

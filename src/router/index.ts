@@ -1,20 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import TripsView from '../views/TripsView.vue'
 import TripFormView from '../views/TripFormView.vue'
 import TripDetailView from '../views/TripDetailView.vue'
 import MemoryFormView from '../views/MemoryFormView.vue'
+import LoginView from '../views/LoginView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView,
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+      meta: { public: true },
     },
     {
-      path: '/trips',
+      path: '/',
       name: 'trips',
       component: TripsView,
     },
@@ -40,6 +41,13 @@ const router = createRouter({
     },
   ],
   scrollBehavior: () => ({ top: 0 }),
+})
+
+router.beforeEach((to) => {
+  const isAuthenticated = sessionStorage.getItem('tripmemories_auth') === '1'
+  if (!to.meta.public && !isAuthenticated) {
+    return { name: 'login' }
+  }
 })
 
 export default router
